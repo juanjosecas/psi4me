@@ -1,0 +1,13 @@
+name: psi4me
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - psi4
+  - rdkit
+  - numpy
+  - pandas
+  - matplotlib
+  - jupyterlab
+  - notebook
