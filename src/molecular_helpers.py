@@ -56,10 +56,22 @@ def generate_3d_coordinates(mol, random_seed=42):
     -------
     rdkit.Chem.Mol
         Molecule with 3D coordinates
+    
+    Raises
+    ------
+    RuntimeError
+        If embedding or optimization fails
     """
     from rdkit.Chem import AllChem
-    AllChem.EmbedMolecule(mol, randomSeed=random_seed)
-    AllChem.MMFFOptimizeMolecule(mol)
+    
+    result = AllChem.EmbedMolecule(mol, randomSeed=random_seed)
+    if result != 0:
+        raise RuntimeError("Failed to generate 3D coordinates for molecule")
+    
+    opt_result = AllChem.MMFFOptimizeMolecule(mol)
+    if opt_result != 0:
+        raise RuntimeError("Failed to optimize molecule with MMFF")
+    
     return mol
 
 
@@ -76,8 +88,16 @@ def mol_to_xyz(mol):
     -------
     str
         XYZ format string
+    
+    Raises
+    ------
+    ValueError
+        If molecule has no conformers (no 3D coordinates)
     """
     from rdkit import Chem
+    
+    if mol.GetNumConformers() == 0:
+        raise ValueError("Molecule has no 3D coordinates. Call generate_3d_coordinates() first.")
     
     conf = mol.GetConformer()
     xyz_lines = [str(mol.GetNumAtoms()), ""]
